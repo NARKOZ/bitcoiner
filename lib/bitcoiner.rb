@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'bitcoiner/version'
 require 'typhoeus'
 require 'json'

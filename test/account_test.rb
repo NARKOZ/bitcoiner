@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class AccountTest < Minitest::Test
@@ -12,7 +14,7 @@ class AccountTest < Minitest::Test
     end
 
     should 'have a short but useful inspect' do
-      assert_equal "#<Bitcoiner::Account \"pi\" >", @acc.inspect
+      assert_equal '#<Bitcoiner::Account "pi" >', @acc.inspect
     end
 
     should 'ask the client for a balance' do
@@ -42,34 +44,34 @@ class AccountTest < Minitest::Test
              .once
              .with('listtransactions', 'pi')
              .returns [
-                        {
-                          'account' => 'pi',
-                          'address' => 'testaddress',
-                          'category' => 'receive',
-                          'amount' => 3.10,
-                          'confirmations' => 310,
-                          'txid' => '310',
-                          'time' => 1234567310
-                        },
-                        {
-                          'account' => 'pi',
-                          'address' => 'testaddress',
-                          'category' => 'receive',
-                          'amount' => 3.11,
-                          'confirmations' => 311,
-                          'txid' => '311',
-                          'time' => 1234567311
-                        },
-                        {
-                          'account' => 'pi',
-                          'address' => 'testaddress',
-                          'category' => 'receive',
-                          'amount' => 3.12,
-                          'confirmations' => 312,
-                          'txid' => '312',
-                          'time' => 1234567312
-                        }
-                      ]
+               {
+                 'account' => 'pi',
+                 'address' => 'testaddress',
+                 'category' => 'receive',
+                 'amount' => 3.10,
+                 'confirmations' => 310,
+                 'txid' => '310',
+                 'time' => 1_234_567_310
+               },
+               {
+                 'account' => 'pi',
+                 'address' => 'testaddress',
+                 'category' => 'receive',
+                 'amount' => 3.11,
+                 'confirmations' => 311,
+                 'txid' => '311',
+                 'time' => 1_234_567_311
+               },
+               {
+                 'account' => 'pi',
+                 'address' => 'testaddress',
+                 'category' => 'receive',
+                 'amount' => 3.12,
+                 'confirmations' => 312,
+                 'txid' => '312',
+                 'time' => 1_234_567_312
+               }
+             ]
 
       @txns = @acc.transactions
 

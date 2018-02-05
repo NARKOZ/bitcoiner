@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bitcoiner
   class Account
     attr_accessor :name

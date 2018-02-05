@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class ClientTest < Minitest::Test
@@ -7,7 +9,7 @@ class ClientTest < Minitest::Test
     end
 
     should 'have a simple and useful inspect' do
-      assert_equal "#<Bitcoiner::Client \"http://testuser:testpass@127.0.0.1:8332\" >", @bcd.inspect
+      assert_equal '#<Bitcoiner::Client "http://testuser:testpass@127.0.0.1:8332" >', @bcd.inspect
     end
 
     context 'balance operation' do

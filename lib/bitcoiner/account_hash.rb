@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bitcoiner
   class AccountHash < Hash
     def initialize(client, balance_hash)

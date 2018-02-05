@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class TransactionTest < Minitest::Test
@@ -16,7 +18,7 @@ class TransactionTest < Minitest::Test
                .returns('amount' => 3.14,
                         'confirmations' => 420,
                         'txid' => 'testtxnid',
-                        'time' => 1234567890,
+                        'time' => 1_234_567_890,
                         'details' => {
                           'account' => 'pi',
                           'address' => 'testaddress',
@@ -27,7 +29,7 @@ class TransactionTest < Minitest::Test
 
       should 'have an amount and time' do
         assert_equal 3.14, @txn.amount
-        assert_equal Time.at(1234567890), @txn.time
+        assert_equal Time.at(1_234_567_890), @txn.time
       end
 
       should 'have confirmations and be confirmed' do
@@ -45,7 +47,7 @@ class TransactionTest < Minitest::Test
       end
 
       should 'have a sane inspect' do
-        assert_equal "#<Bitcoiner::Transaction testtxnid UNCONFIRMED>", @txn.inspect
+        assert_equal '#<Bitcoiner::Transaction testtxnid UNCONFIRMED>', @txn.inspect
       end
 
       should 'have zero confirmations and be unconfirmed' do

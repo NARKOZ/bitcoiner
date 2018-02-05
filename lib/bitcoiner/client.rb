@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Bitcoiner
   class Client
     def initialize(user, pass, host = '127.0.0.1:8332')
