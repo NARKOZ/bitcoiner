@@ -7,7 +7,7 @@ require 'json'
 end
 
 module Bitcoiner
-  def self.new(user, pass)
-    Client.new user, pass
+  def self.new(user, pass, host = '127.0.0.1:8332')
+    Client.new user, pass, host
   end
 end
