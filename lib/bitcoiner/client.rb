@@ -7,8 +7,8 @@ module Bitcoiner
 
     def initialize(user, pass, host)
       uri = Addressable::URI.heuristic_parse(host)
-      uri.user = user
-      uri.password = pass
+      uri.user ||= user
+      uri.password ||= pass
       self.endpoint = uri.to_s
     end
 
