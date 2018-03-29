@@ -55,4 +55,9 @@ class ClientTest < Minitest::Test
     client = Bitcoiner::Client.new("username", "password", "host.com")
     assert_equal 'http://username:password@host.com', client.endpoint
   end
+
+  should "allow setting of uri scheme" do
+    client = Bitcoiner::Client.new("username", "password", "https://host.com")
+    assert_equal 'https://username:password@host.com', client.endpoint
+  end
 end

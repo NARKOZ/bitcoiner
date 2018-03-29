@@ -5,8 +5,11 @@ module Bitcoiner
 
     attr_accessor :endpoint
 
-    def initialize(user, pass, host = '127.0.0.1:8332')
-      self.endpoint = "http://#{user}:#{pass}@#{host}"
+    def initialize(user, pass, host)
+      uri = Addressable::URI.heuristic_parse(host)
+      uri.user = user
+      uri.password = pass
+      self.endpoint = uri.to_s
     end
 
     def balance
