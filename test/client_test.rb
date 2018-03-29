@@ -50,4 +50,9 @@ class ClientTest < Minitest::Test
       end
     end
   end
+
+  should "allow setting of host" do
+    client = Bitcoiner::Client.new("username", "password", "host.com")
+    assert_equal 'http://username:password@host.com', client.endpoint
+  end
 end
