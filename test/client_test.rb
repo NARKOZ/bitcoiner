@@ -49,5 +49,29 @@ class ClientTest < Minitest::Test
         assert_equal 'pi', @result['pi'].name
       end
     end
+
+    context "response is not successful" do
+      setup do
+        response = Typhoeus::Response.new(
+          code: 0,
+          return_code: :couldnt_connect,
+        )
+        Typhoeus.stub('http://testuser:testpass@127.0.0.1:8332').and_return(response)
+      end
+
+      teardown do
+        Typhoeus::Expectation.clear
+      end
+
+      should "raise JSONRPCError" do
+        assert_raises(
+          Bitcoiner::Client::JSONRPCError,
+          "unsuccessful response; code: `0`, return_code: `couldnt_connect`",
+        ) do
+          @bcd.request("listtransactions")
+        end
+      end
+    end
+
   end
 end
