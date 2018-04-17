@@ -3,7 +3,7 @@
 require 'bitcoiner/version'
 require 'typhoeus'
 require 'json'
-require "addressable"
+require 'addressable'
 
 %w[client account account_hash transaction].each do |f|
   require File.join(File.dirname(__FILE__), 'bitcoiner', f)

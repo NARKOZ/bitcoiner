@@ -16,7 +16,7 @@ module Bitcoiner
 
     def inspect
       "#<Bitcoiner::Transaction #{id} #{amount} to #{account.name} at #{time}>"
-    rescue
+    rescue StandardError
       "#<Bitcoiner::Transaction #{id} UNCONFIRMED>"
     end
 
@@ -25,7 +25,9 @@ module Bitcoiner
     end
 
     def confirmations
-      detail_hash['confirmations'] rescue 0
+      detail_hash['confirmations']
+    rescue StandardError
+      0
     end
 
     def time

@@ -50,11 +50,11 @@ class ClientTest < Minitest::Test
       end
     end
 
-    context "response is not successful" do
+    context 'response is not successful' do
       setup do
         response = Typhoeus::Response.new(
           code: 0,
-          return_code: :couldnt_connect,
+          return_code: :couldnt_connect
         )
         Typhoeus.stub('http://testuser:testpass@127.0.0.1:8332').and_return(response)
       end
@@ -63,30 +63,29 @@ class ClientTest < Minitest::Test
         Typhoeus::Expectation.clear
       end
 
-      should "raise JSONRPCError" do
+      should 'raise JSONRPCError' do
         assert_raises(
           Bitcoiner::Client::JSONRPCError,
-          "unsuccessful response; code: `0`, return_code: `couldnt_connect`",
+          'unsuccessful response; code: `0`, return_code: `couldnt_connect`'
         ) do
-          @bcd.request("listtransactions")
+          @bcd.request('listtransactions')
         end
       end
     end
-
   end
 
-  should "allow setting of host" do
-    client = Bitcoiner::Client.new("username", "password", "host.com")
+  should 'allow setting of host' do
+    client = Bitcoiner::Client.new('username', 'password', 'host.com')
     assert_equal 'http://username:password@host.com', client.endpoint
   end
 
-  should "allow setting of uri scheme" do
-    client = Bitcoiner::Client.new("username", "password", "https://host.com")
+  should 'allow setting of uri scheme' do
+    client = Bitcoiner::Client.new('username', 'password', 'https://host.com')
     assert_equal 'https://username:password@host.com', client.endpoint
   end
 
-  should "prioritize the credentials in the host" do
-    client = Bitcoiner::Client.new("username", "password", "https://abc:123@host.com")
+  should 'prioritize the credentials in the host' do
+    client = Bitcoiner::Client.new('username', 'password', 'https://abc:123@host.com')
     assert_equal 'https://abc:123@host.com', client.endpoint
   end
 end

@@ -2,7 +2,6 @@
 
 module Bitcoiner
   class Client
-
     attr_accessor :endpoint
 
     def initialize(user, pass, host)
@@ -41,12 +40,11 @@ module Bitcoiner
       if response.success?
         JSON.parse(response.body)
       else
-        error_message = [:code, :return_code].map do |attr|
+        error_message = %i[code return_code].map do |attr|
           "#{attr}: `#{response.send(attr)}`"
-        end.join(", ")
-        fail JSONRPCError, "unsuccessful response; #{error_message}"
+        end.join(', ')
+        raise JSONRPCError, "unsuccessful response; #{error_message}"
       end
     end
-
   end
 end
