@@ -24,7 +24,7 @@ module Bitcoiner
     def request(method, *args)
       post_body = { 'method' => method, 'params' => args, 'id' => 'jsonrpc' }.to_json
       response = Typhoeus.post(endpoint, body: post_body)
-      response_hash = JSON.parse response.body
+      response_hash = parse_body(response)
       raise JSONRPCError, response_hash['error'] if response_hash['error']
       response_hash['result']
     end
@@ -34,5 +34,19 @@ module Bitcoiner
     end
 
     class JSONRPCError < RuntimeError; end
+
+    private
+
+    def parse_body(response)
+      if response.success?
+        JSON.parse(response.body)
+      else
+        error_message = [:code, :return_code].map do |attr|
+          "#{attr}: `#{response.send(attr)}`"
+        end.join(", ")
+        fail JSONRPCError, "unsuccessful response; #{error_message}"
+      end
+    end
+
   end
 end
