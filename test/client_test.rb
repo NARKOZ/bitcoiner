@@ -17,7 +17,10 @@ class ClientTest < Minitest::Test
 
     context 'balance operation' do
       setup do
-        response = Typhoeus::Response.new(code: 200, body: "{\"result\":12.34000000,\"error\":null,\"id\":\"jsonrpc\"}\n")
+        response = Typhoeus::Response.new(
+          code: 200,
+          body: "{\"result\":12.34000000,\"error\":null,\"id\":\"jsonrpc\"}\n"
+        )
         Typhoeus.stub('http://127.0.0.1:8332', userpwd: "testuser:testpass").
           and_return(response)
       end
@@ -34,7 +37,10 @@ class ClientTest < Minitest::Test
 
     context 'accounts operation' do
       setup do
-        response = Typhoeus::Response.new(code: 200, body: "{\"result\":{\"\":0.0,\"Your Address\":0.0,\"pi\":3.14,\"ben\":100.00},\"error\":null,\"id\":\"jsonrpc\"}\n")
+        response = Typhoeus::Response.new(
+          code: 200,
+          body: "{\"result\":{\"\":0.0,\"Your Address\":0.0,\"pi\":3.14,\"ben\":100.00},\"error\":null,\"id\":\"jsonrpc\"}\n"
+        )
         Typhoeus.stub('http://127.0.0.1:8332', userpwd: "testuser:testpass").
           and_return(response)
       end

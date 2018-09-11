@@ -23,12 +23,18 @@ module Bitcoiner
     end
 
     def request(method, *args)
-      post_body = { 'method' => method, 'params' => args, 'id' => 'jsonrpc' }.to_json
+      post_body = {
+        'method' => method,
+        'params' => args,
+        'id' => 'jsonrpc'
+      }.to_json
+
       response = Typhoeus.post(
         endpoint,
         userpwd: [username, password].join(":"),
         body: post_body,
       )
+
       response_hash = parse_body(response)
       raise JSONRPCError, response_hash['error'] if response_hash['error']
       response_hash['result']
