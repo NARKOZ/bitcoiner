@@ -9,13 +9,20 @@ class ClientTest < Minitest::Test
     end
 
     should 'have a simple and useful inspect' do
-      assert_equal '#<Bitcoiner::Client "http://testuser:testpass@127.0.0.1:8332" >', @bcd.inspect
+      assert_equal(
+        '#<Bitcoiner::Client "http://127.0.0.1:8332" testuser:testpass >',
+        @bcd.inspect
+      )
     end
 
     context 'balance operation' do
       setup do
-        response = Typhoeus::Response.new(code: 200, body: "{\"result\":12.34000000,\"error\":null,\"id\":\"jsonrpc\"}\n")
-        Typhoeus.stub('http://testuser:testpass@127.0.0.1:8332').and_return(response)
+        response = Typhoeus::Response.new(
+          code: 200,
+          body: "{\"result\":12.34000000,\"error\":null,\"id\":\"jsonrpc\"}\n"
+        )
+        Typhoeus.stub('http://127.0.0.1:8332', userpwd: "testuser:testpass").
+          and_return(response)
       end
 
       teardown do
@@ -30,8 +37,12 @@ class ClientTest < Minitest::Test
 
     context 'accounts operation' do
       setup do
-        response = Typhoeus::Response.new(code: 200, body: "{\"result\":{\"\":0.0,\"Your Address\":0.0,\"pi\":3.14,\"ben\":100.00},\"error\":null,\"id\":\"jsonrpc\"}\n")
-        Typhoeus.stub('http://testuser:testpass@127.0.0.1:8332').and_return(response)
+        response = Typhoeus::Response.new(
+          code: 200,
+          body: "{\"result\":{\"\":0.0,\"Your Address\":0.0,\"pi\":3.14,\"ben\":100.00},\"error\":null,\"id\":\"jsonrpc\"}\n"
+        )
+        Typhoeus.stub('http://127.0.0.1:8332', userpwd: "testuser:testpass").
+          and_return(response)
       end
 
       teardown do
@@ -56,7 +67,8 @@ class ClientTest < Minitest::Test
           code: 0,
           return_code: :couldnt_connect
         )
-        Typhoeus.stub('http://testuser:testpass@127.0.0.1:8332').and_return(response)
+        Typhoeus.stub('http://127.0.0.1:8332', userpwd: "testuser:testpass").
+          and_return(response)
       end
 
       teardown do
@@ -74,18 +86,22 @@ class ClientTest < Minitest::Test
     end
   end
 
-  should 'allow setting of host' do
+  should 'allow setting of host separately from credentials' do
     client = Bitcoiner::Client.new('username', 'password', 'host.com')
-    assert_equal 'http://username:password@host.com', client.endpoint
+    assert_equal 'http://host.com', client.endpoint
+    assert_equal "username", client.username
+    assert_equal "password", client.password
   end
 
   should 'allow setting of uri scheme' do
     client = Bitcoiner::Client.new('username', 'password', 'https://host.com')
-    assert_equal 'https://username:password@host.com', client.endpoint
+    assert_equal 'https://host.com', client.endpoint
   end
 
-  should 'prioritize the credentials in the host' do
+  should 'prioritize the credentials in the host and strips them' do
     client = Bitcoiner::Client.new('username', 'password', 'https://abc:123@host.com')
-    assert_equal 'https://abc:123@host.com', client.endpoint
+    assert_equal 'https://host.com', client.endpoint
+    assert_equal 'abc', client.username
+    assert_equal '123', client.password
   end
 end
