@@ -2,12 +2,14 @@
 
 module Bitcoiner
   class Client
-    attr_accessor :endpoint
+    attr_accessor :endpoint, :username, :password
 
     def initialize(user, pass, host)
       uri = Addressable::URI.heuristic_parse(host)
-      uri.user ||= user
-      uri.password ||= pass
+      self.username = uri.user || user
+      self.password = uri.password || pass
+      uri.user = uri.password = nil
+
       self.endpoint = uri.to_s
     end
 
@@ -22,14 +24,18 @@ module Bitcoiner
 
     def request(method, *args)
       post_body = { 'method' => method, 'params' => args, 'id' => 'jsonrpc' }.to_json
-      response = Typhoeus.post(endpoint, body: post_body)
+      response = Typhoeus.post(
+        endpoint,
+        userpwd: [username, password].join(":"),
+        body: post_body,
+      )
       response_hash = parse_body(response)
       raise JSONRPCError, response_hash['error'] if response_hash['error']
       response_hash['result']
     end
 
     def inspect
-      "#<Bitcoiner::Client #{endpoint.inspect} >"
+      "#<Bitcoiner::Client #{endpoint.inspect} #{username}:#{password} >"
     end
 
     class JSONRPCError < RuntimeError; end
