@@ -84,6 +84,33 @@ class ClientTest < Minitest::Test
         end
       end
     end
+
+    context "batch calls" do
+      setup do
+        response = Typhoeus::Response.new(
+          code: 200,
+          body: [
+            {"result"=>{""=>0.0, "Your Address"=>0.0, "pi"=>3.14, "ben"=>100.0}, "error"=>nil, "id"=>"jsonrpc"},
+            {"result"=>{""=>0.0, "Your Address"=>0.0, "pi"=>3.14, "ben"=>100.1}, "error"=>nil, "id"=>"jsonrpc"}
+          ].to_json
+        )
+        Typhoeus.stub('http://127.0.0.1:8332', userpwd: "testuser:testpass").
+          and_return(response)
+      end
+
+      teardown do
+        Typhoeus::Expectation.clear
+      end
+
+      should 'be able to execute a batch transaction' do
+        @result = @bcd.request([["listaccounts", []],["listaccounts", []]])
+        assert_kind_of Array, @result
+
+        assert_equal @result.count, 2
+        assert_equal @result[0]["result"]["ben"], 100.0
+        assert_equal @result[1]["result"]["ben"], 100.1
+      end
+    end
   end
 
   should 'allow setting of host separately from credentials' do

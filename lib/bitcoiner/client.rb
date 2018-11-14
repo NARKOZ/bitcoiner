@@ -22,22 +22,37 @@ module Bitcoiner
       AccountHash.new self, balance_hash
     end
 
-    def request(method, *args)
-      post_body = {
-        'method' => method,
-        'params' => args,
-        'id' => 'jsonrpc'
-      }.to_json
+    def request(method_or_array_of_methods, *args)
+      if method_or_array_of_methods.is_a?(Array)
+        post_body = method_or_array_of_methods.map do |m|
+          {
+            'method' => m[0],
+            'params' => m[1],
+            'id' => 'jsonrpc'
+          }
+        end
+      else
+        post_body = {
+          'method' => method_or_array_of_methods,
+          'params' => args,
+          'id' => 'jsonrpc'
+        }
+      end
 
       response = Typhoeus.post(
         endpoint,
         userpwd: [username, password].join(":"),
-        body: post_body,
+        body: post_body.to_json,
       )
 
-      response_hash = parse_body(response)
-      raise JSONRPCError, response_hash['error'] if response_hash['error']
-      response_hash['result']
+      parsed_response = parse_body(response)
+
+      if parsed_response.is_a?(Hash)
+        raise JSONRPCError, parsed_response['error'] if parsed_response['error']
+        return parsed_response['result']
+      end
+
+      parsed_response
     end
 
     def inspect
