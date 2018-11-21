@@ -2,6 +2,9 @@
 
 module Bitcoiner
   class Client
+
+    DEFAULT_ID = 'jsonrpc'.freeze
+
     attr_accessor :endpoint, :username, :password
 
     def initialize(user, pass, host)
@@ -24,35 +27,10 @@ module Bitcoiner
 
     def request(method_or_array_of_methods, *args)
       if method_or_array_of_methods.is_a?(Array)
-        post_body = method_or_array_of_methods.map do |m|
-          {
-            'method' => m[0],
-            'params' => m[1],
-            'id' => 'jsonrpc'
-          }
-        end
+        batch_request(method_or_array_of_methods)
       else
-        post_body = {
-          'method' => method_or_array_of_methods,
-          'params' => args,
-          'id' => 'jsonrpc'
-        }
+        single_request(method_or_array_of_methods, *args)
       end
-
-      response = Typhoeus.post(
-        endpoint,
-        userpwd: [username, password].join(":"),
-        body: post_body.to_json,
-      )
-
-      parsed_response = parse_body(response)
-
-      if parsed_response.is_a?(Hash)
-        raise JSONRPCError, parsed_response['error'] if parsed_response['error']
-        return parsed_response['result']
-      end
-
-      parsed_response
     end
 
     def inspect
@@ -62,6 +40,32 @@ module Bitcoiner
     class JSONRPCError < RuntimeError; end
 
     private
+
+    def post(body)
+      Typhoeus.post(
+        endpoint,
+        userpwd: [username, password].join(":"),
+        body: body.to_json,
+      )
+    end
+
+    def batch_request(methods_and_args)
+      post_body = methods_and_args.map do |method, args|
+        { 'method' => method, 'params' => args, 'id' => DEFAULT_ID }
+      end
+      response = post(post_body)
+      parse_body(response)
+    end
+
+    def single_request(method, *args)
+      post_body = { 'method' => method, 'params' => args, 'id' => DEFAULT_ID }
+      response = post(post_body)
+      parsed_response = parse_body(response)
+
+      raise JSONRPCError, parsed_response['error'] if parsed_response['error']
+
+      parsed_response['result']
+    end
 
     def parse_body(response)
       if response.success?
