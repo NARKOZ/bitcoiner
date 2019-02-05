@@ -71,10 +71,11 @@ module Bitcoiner
       if response.success?
         JSON.parse(response.body)
       else
-        error_message = %i[code return_code].map do |attr|
-          "#{attr}: `#{response.send(attr)}`"
-        end.join(', ')
-        raise JSONRPCError, "unsuccessful response; #{error_message}"
+        error_messages = %i[code return_code].each_with_object({}) do |attr, hash|
+          hash[attr] = response.send(attr)
+        end
+        error_messages[:body] = response.body
+        raise JSONRPCError, error_messages.map {|k, v| "#{k}: `#{v}`"}.join("; ")
       end
     end
   end

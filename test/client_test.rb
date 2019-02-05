@@ -64,8 +64,11 @@ class ClientTest < Minitest::Test
     context 'response is not successful' do
       setup do
         response = Typhoeus::Response.new(
-          code: 0,
-          return_code: :couldnt_connect
+          code: 500,
+          return_code: :ok,
+          # response supposedly includes body
+          # https://github.com/bitcoin/bitcoin/issues/12673#issuecomment-372334718
+          body: {some: "body"}.to_json,
         )
         Typhoeus.stub('http://127.0.0.1:8332', userpwd: "testuser:testpass").
           and_return(response)
@@ -76,12 +79,16 @@ class ClientTest < Minitest::Test
       end
 
       should 'raise JSONRPCError' do
-        assert_raises(
-          Bitcoiner::Client::JSONRPCError,
-          'unsuccessful response; code: `0`, return_code: `couldnt_connect`'
-        ) do
+        error = assert_raises(Bitcoiner::Client::JSONRPCError) do
           @bcd.request('listtransactions')
         end
+
+        expected_error_message = [
+          'code: `500`',
+          'return_code: `ok`',
+          'body: `{"some":"body"}`',
+        ].join("; ")
+        assert_equal expected_error_message, error.message
       end
     end
 
