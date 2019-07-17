@@ -88,6 +88,17 @@ tiny_wings.address
 # => "1KV5khnHbbHF2nNQkk7Pe5nPndEj43U27r"
 ```
 
+### Logging
+
+You may log requests (responses aren't logged) by setting a logger:
+
+```
+logger = Logger.new(STDOUT)
+client = Bitcoiner::Client.new('username', 'password', 'http://a.c', {
+  logger: logger,
+})
+```
+
 ## License
 
 Released under the MIT license. See LICENSE.txt for details.

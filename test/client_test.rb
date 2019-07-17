@@ -138,4 +138,28 @@ class ClientTest < Minitest::Test
     assert_equal 'abc', client.username
     assert_equal '123', client.password
   end
+
+  should 'have a customisable logger' do
+    logger = Logger.new(STDOUT)
+
+    client = Bitcoiner::Client.new('username', 'password', 'http://a.c', {
+      logger: logger,
+    })
+
+    assert_equal logger, client.logger
+  end
+
+  should 'logs requests if logger configured' do
+    FileUtils.rm_rf "tmp"
+    FileUtils.mkdir_p "tmp"
+    logger = Logger.new("tmp/test.log")
+    client = Bitcoiner::Client.new('username', 'password', 'http://a.c', {
+      logger: logger,
+    })
+
+    client.request("listtransactions") rescue # don't care that it fails
+
+    f = File.read("tmp/test.log")
+    assert f.include?("listtransactions")
+  end
 end
