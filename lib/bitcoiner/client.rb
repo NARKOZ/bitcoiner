@@ -4,16 +4,19 @@ module Bitcoiner
   class Client
 
     DEFAULT_ID = 'jsonrpc'.freeze
+    LOG_PREFIX = "[bitcoiner]".freeze
 
-    attr_accessor :endpoint, :username, :password
+    attr_accessor :endpoint, :username, :password, :logger
 
-    def initialize(user, pass, host)
+    def initialize(user, pass, host, logger: nil)
       uri = Addressable::URI.heuristic_parse(host)
       self.username = uri.user || user
       self.password = uri.password || pass
       uri.user = uri.password = nil
 
       self.endpoint = uri.to_s
+
+      self.logger = logger
     end
 
     def balance
@@ -27,8 +30,10 @@ module Bitcoiner
 
     def request(method_or_array_of_methods, *args)
       if method_or_array_of_methods.is_a?(Array)
+        log("#{method_or_array_of_methods}")
         batch_request(method_or_array_of_methods)
       else
+        log("#{method_or_array_of_methods}; args: #{args.inspect}")
         single_request(method_or_array_of_methods, *args)
       end
     end
@@ -42,6 +47,13 @@ module Bitcoiner
     private
 
     def post(body)
+      msg = {
+        endpoint: endpoint,
+        username: username,
+        body: body.to_json,
+      }.to_s
+      log(msg)
+
       Typhoeus.post(
         endpoint,
         userpwd: [username, password].join(":"),
@@ -77,6 +89,10 @@ module Bitcoiner
         error_messages[:body] = response.body
         raise JSONRPCError, error_messages.map {|k, v| "#{k}: `#{v}`"}.join("; ")
       end
+    end
+
+    def log(msg)
+      self.logger.info("#{LOG_PREFIX} #{msg}") if self.logger
     end
   end
 end
