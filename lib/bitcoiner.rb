@@ -10,7 +10,7 @@ require 'addressable'
 end
 
 module Bitcoiner
-  def self.new(user, pass, host = '127.0.0.1:8332')
-    Client.new user, pass, host
+  def self.new(user, pass, host = '127.0.0.1:8332', logger: nil)
+    Client.new user, pass, host, logger: logger
   end
 end
