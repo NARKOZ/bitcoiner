@@ -1,4 +1,4 @@
-# Bitcoiner [![Build Status](https://travis-ci.org/NARKOZ/bitcoiner.svg?branch=master)](https://travis-ci.org/NARKOZ/bitcoiner)
+# Bitcoiner
 
 Automate your [Bitcoin](https://bitcoin.org/) transactions with this Ruby
 interface to the `bitcoind` JSON-RPC API. This is a fork of
